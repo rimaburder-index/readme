@@ -1,0 +1,615 @@
+openapi: 3.0.0
+info:
+  title: Exchange Client Audit Logs
+  description: API for clients to retrieve their audit logs from the IX exchange.
+  version: 1.17.0
+
+servers:
+  - url: https://app.indexexchange.com/api/logs/exchange-cal/v1
+    description: Production Exchange CAL endpoint
+  - url: https://app.test.indexexchange.com/api/logs/exchange-cal/v1
+    description: Test Exchange CAL endpoint (uses test data)
+
+paths:
+  /mappings/dsps/:
+    get:
+      summary: Get DSP Mapping
+      description: Lists active DSP ids to DSP names
+      security:
+        - keycloakClient: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/DSPMapping"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /mappings/partners/:
+    get:
+      summary: Get Partner Mapping
+      description: Retrieves mapping of all Active Partner IDs -> Partner Names --or-- Given partner_id=# returns only single mapping for partner_id=#
+      security:
+        - keycloakClient: []
+      parameters:
+        - in: query
+          name: partner_id
+          description: optional partnerID parameter. Represents the user_id of the individual partner mapping you wish to retrieve
+          schema: 
+            type: integer
+          example: 180045
+          required: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/PartnerMapping"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /mappings/buyers/:
+    get:
+      summary: Get Buyer Mapping
+      description: Lists active buyers and returns a list of dsp_id and trading_desk_id to buyer_name
+      security:
+        - keycloakClient: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/BuyerMapping"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /mappings/deals/:
+    get:
+      summary: Get Deals Mapping
+      description: Lists deal_id to deal_name mappings for client accessing the route
+      security:
+        - keycloakClient: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/DealMapping"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /mappings/dealsections/:
+    get:
+      summary: Get Deals Section Mapping
+      description: Lists dealsections_id to dealsections_name mappings for client accessing the route
+      security:
+        - keycloakClient: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/DealSectionsMapping"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /mappings/sites/:
+    get:
+      summary: Get Sites Mapping
+      description: Lists site_id to site_name mappings for client accessing the route
+      security:
+        - keycloakClient: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/SiteMapping"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /mappings/campaigns/:
+    get:
+      summary: Get Campaigns Mapping
+      description: Lists campaign_id to campaign_name mappings as well as brand_id to brand_name and creative_id to creative_name mappings for client accessing the route
+      security:
+        - keycloakClient: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/CampaignMapping"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /downloads:
+    get:
+      summary: Get Downloads
+      description: Lists available report files for the current client, determined from the bearer token. The client can either list all their report files or, by passing in an eventHour, see only files for that particular time. Files which have expired will not be returned.
+      security:
+        - keycloakClient: []
+      parameters:
+        - in: query
+          name: hour
+          description: Optional hour timestamp. If provided, only log files for this particular hour will be returned. Must be rounded to an exact hour, in UTC time and [RFC-3339](https://www.ietf.org/rfc/rfc3339.txt) format.
+          schema:
+            type: string
+          required: false
+          example: "2018-11-27T15:00:00Z"
+        - in: query
+          name: subscriptionName
+          schema:
+            type: string
+          description: Optional parameter to set the type of subscription to receieve reports for. Default value is 'impressions'.
+          required: false
+          example: "bid events" 
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FileInfo"
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /exchange-rates:
+    get:
+      summary: Get Exchange Rates
+      description: Retrieve historical foreign currency exchange rates by date and currency type. This route either accepts parameters for date and currency, and returns the exchange rate for that currency on the given date --or-- accepts no parameters and returns all exchange rates for the past 15 days.
+      security:
+        - keycloakClient: []
+      parameters:
+        - in: query
+          name: date
+          description: optional date parameter. must be in YYYY-MM-DD format. If given, you must also give a currency parameter. only the exchange rate on the given date will be retrieved
+          schema: 
+            type: string
+            format: YYYY-MM-DD
+          example: "2019-06-05"
+          required: false
+        - in: query
+          name: currency
+          description: optional 3-letter currency code. must be given in tandem with date. only exchange rates for the given currency will be retrieved
+          schema:
+            type: string
+          example: "CAD"
+          required: false
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExchangeRate"
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+  /files/{fileId}:
+    get:
+      summary: Get Files
+      description: This route downloads a particular report file by its ID. The API will transparently grab the file from wherever it is stored and return it to the caller. The particular report file requested must be associated with the client accessing the route, or the download will not be allowed. Links to this route are what is returned in the downloadURL field of the response to the /downloads route.
+      operationId: downloadFile
+      security:
+        - keycloakClient: []
+      parameters:
+        - in: path
+          name: fileId
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+          description: ID of the log file. Provided with the download path in the downloadURL field of the response from the downloads route.
+      responses:
+        200:
+          description: OK
+          content:
+            application/gzip:
+              schema:
+                type: string
+                format: binary
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        401:
+          description: Authentication failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+components:
+  securitySchemes:
+    keycloakClient:
+      type: oauth2
+      description: Obtain a Client Credentials Grant token from Keycloak, representing a particular client ID. The client ID used controls what access is granted.
+      flows:
+        clientCredentials:
+          tokenUrl: https://identity.indexexchange.com/auth/realms/eventlog/protocol/openid-connect/token/
+          scopes: {}
+  schemas:
+    DSPMapping:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              dsp_id:
+                type: integer
+                example: 123
+                description: Index Exchange's internal numeric identifier of the DSP
+              dsp_name:
+                type: string
+                example: "Your DSP"
+                description: Human-readable name of the DSP
+    PartnerMapping:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              partner_id:
+                type: integer
+                example: 1840043
+                description: Index Exchange's internal user ID for the partner
+              partner_name:
+                type: string
+                example: "#1 Pub!"
+                description: Company name associated to the partner
+    BuyerMapping:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              dsp_id:
+                type: integer
+                example: 123
+                description: Index Exchange's internal numeric identifier of the DSP
+              trading_desk_id:
+                type: integer
+                example: 456
+                description: Index Exchange's internal numeric identifier of the Trading Desk
+              buyer_name:
+                type: string
+                example: "Your Buyer"
+                description: Human-readable name of the Buyer
+    DealMapping:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              deal_id:
+                type: string
+                description: Index Exchange's internal identifier of the Deal
+                example: "IX513654793266898038"
+              deal_name:
+                type: string
+                description: Human-readable name of the Deal
+                example: "Deal without any campaign"
+              section_id:
+                type: array
+                items: 
+                  type: string
+                description: List of deal section ids that the deal belongs to
+                example: [1,3,5,7]
+              dsp_id:
+                type: integer
+                description: Index Exchange's internal numeric identifier of the DSP
+                example: 85
+              deal_type:
+                type: integer
+                description: The ID of the deal type
+                example: 0
+              auction_type:
+                type: string
+                description: The auction type
+                example: "second"
+              rate:
+                type: integer
+                description: The floor rate of the deal
+                example: 1
+              status:
+                type: string
+                description: The status of the deal
+                example: "A"
+              start_date:
+                type: string
+                description: The start date of the deal (year-month-date format)
+                example: "2017-12-18"
+              end_date:
+                type: string
+                description: The end date of the deal (year-month-date format)
+                example: "2027-12-31"
+              priority:
+                type: integer
+                description: The priority of the deal
+                example: 5
+    DealSectionsMapping:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              sectionID:
+                type: string
+                description: Index Exchange's internal identifier of the DealSections
+                example: "IX513654793266898038"
+              name:
+                type: string
+                description: Human-readable name of the DealSections
+                example: "Deal Section without any campaign"
+    SiteMapping:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              site_id:
+                type: integer
+                description: Index Exchange's internal identifier of the Site
+                example: 175694
+              site_name:
+                type: string
+                description: Human-readable name of the Site
+                example: "publisher.com"
+    CampaignMapping:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Campaign"
+    Campaign:
+      type: object
+      properties:
+        campaign_id:
+          type: integer
+          description: Index Exchange's internal identifier of the Campaign
+          example: 175694
+        campaign_name:
+          type: string
+          description: Human-readable name of the Campaign
+          example: "Your Campaign"
+        brand_id:
+          type: integer
+          description: Index Exchange's internal identifier of the Brand
+          example: 123551
+        brand_name:
+          type: string
+          description: Human-readable name of the Brand
+          example: "A Special Brand"
+        creatives:
+          type: array
+          items:
+            $ref: "#/components/schemas/Creative"
+    Creative:
+      type: object
+      properties:
+        creative_id:
+          type: integer
+          description: Index Exchange's internal identifier of the Creative
+          example: 4321
+        creative_name:
+          type: string
+          description: Human-readable name of the Creative
+          example: "Creative Crafted for You"
+    FileInfo:
+      type: object
+      properties:
+        subscriptionID:
+          type: integer
+          description: ID of the subscription this file was generated for
+          example: 55
+        subscriptionName:
+          type: string
+          description: Human-readable name for the subscription
+          example: "impressions"
+        hour:
+          type: string
+          description: Starting hour of the logged events as an [RFC-3339](https://www.ietf.org/rfc/rfc3339.txt) timestamp.
+          example: "2018-11-27T15:00:00Z"
+        dateCreated:
+          type: string
+          description: Timestamp when the log file was generated. [RFC-3339](https://www.ietf.org/rfc/rfc3339.txt) format.
+          example: "2018-11-27T16:31:22Z"
+        expires:
+          type: string
+          description: Timestamp when the log file will expire and become unavailable for download. [RFC-3339](https://www.ietf.org/rfc/rfc3339.txt) format.
+          example: "2018-12-11T17:00:00Z"
+        fileSize:
+          type: integer
+          description: Size of the log file in bytes.
+          example: 1237894
+        md5sum:
+          type: string
+          description: MD5 hash of the log file.
+          example: "5d41402abc4b2a76b9719d911017c592"
+        downloadURL:
+          type: string
+          description: URL to download the log file. This will be a direct link to the /files route of this API with its fileID parameter filled in.
+          example: "https://app.indexexchange.com/api/logs/exchange-cal/v1/files/12345"
+        downloadStatus:
+          type: string
+          enum:
+            - new
+            - updated
+            - downloaded
+      required:
+        - subscriptionID
+        - subscriptionName
+        - hour
+        - dateCreated
+        - expires
+        - fileSize
+        - md5sum
+        - downloadURL
+        - downloadStatus
+    ExchangeRate:
+      type: object
+      properties:
+        base:
+          type: string
+          description: the base currency to which the other currencies value is relative to. Generally 'USD'
+          example: "USD"
+        date:
+          type: string
+          description: the date on which the given exchange rates were valid
+          example: "2019-04-27"
+        rates:
+            type: array
+            items:
+              $ref: "#/components/schemas/Rate"
+    Rate:
+      type: object
+      properties:
+        currency:
+          type: string
+          description: the 3-letter foreign currency code to be compared with the base currency
+          example: "AUD"
+        rate:
+          type: number
+          description: the exchange rate of the currency with respect to the base to the base
+          example: 1.37
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Descriptive message explaining the error.
+          example: An error has occurred, please check your input and try again.
+          # Actual message will vary based on the error
+
