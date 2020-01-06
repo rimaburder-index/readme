@@ -73,7 +73,7 @@ paths:
                 $ref: "#/components/schemas/ErrorMessage"
   /mappings/buyers/:
     get:
-      summary: Get Buyer Mapping
+      summary: Get Buyer Mapping - ANGELA
       description: Lists active buyers and returns a list of dsp_id and trading_desk_id to buyer_name
       security:
         - keycloakClient: []
