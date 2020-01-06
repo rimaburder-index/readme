@@ -39,7 +39,7 @@ paths:
                 $ref: "#/components/schemas/ErrorMessage"
   /mappings/partners/:
     get:
-      summary: Get Partner Mapping
+      summary: Get Partner Mapping - test
       description: Retrieves mapping of all Active Partner IDs -> Partner Names --or-- Given partner_id=# returns only single mapping for partner_id=#
       security:
         - keycloakClient: []
