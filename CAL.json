@@ -9,12 +9,13 @@ servers:
     description: Production Exchange CAL endpoint
   - url: https://app.test.indexexchange.com/api/logs/exchange-cal/v1
     description: Test Exchange CAL endpoint (uses test data)
-
 paths:
   /mappings/dsps/:
     get:
-      summary: Get DSP Mapping - TEST 
+      summary: Get DSP Mapping
       description: Lists active DSP ids to DSP names
+      tags:
+        - Mappings
       security:
         - keycloakClient: []
       responses:
@@ -39,8 +40,10 @@ paths:
                 $ref: "#/components/schemas/ErrorMessage"
   /mappings/partners/:
     get:
-      summary: Get Partner Mapping - test
+      summary: Get Partner Mapping
       description: Retrieves mapping of all Active Partner IDs -> Partner Names --or-- Given partner_id=# returns only single mapping for partner_id=#
+      tags:
+        - Mappings
       security:
         - keycloakClient: []
       parameters:
@@ -73,8 +76,10 @@ paths:
                 $ref: "#/components/schemas/ErrorMessage"
   /mappings/buyers/:
     get:
-      summary: Get Buyer Mapping - ANGELA
+      summary: Get Buyer Mapping
       description: Lists active buyers and returns a list of dsp_id and trading_desk_id to buyer_name
+      tags:
+        - Mappings
       security:
         - keycloakClient: []
       responses:
@@ -101,6 +106,8 @@ paths:
     get:
       summary: Get Deals Mapping
       description: Lists deal_id to deal_name mappings for client accessing the route
+      tags:
+        - Mappings
       security:
         - keycloakClient: []
       responses:
@@ -127,6 +134,8 @@ paths:
     get:
       summary: Get Deals Section Mapping
       description: Lists dealsections_id to dealsections_name mappings for client accessing the route
+      tags:
+        - Mappings
       security:
         - keycloakClient: []
       responses:
@@ -153,6 +162,8 @@ paths:
     get:
       summary: Get Sites Mapping
       description: Lists site_id to site_name mappings for client accessing the route
+      tags:
+        - Mappings
       security:
         - keycloakClient: []
       responses:
@@ -179,6 +190,8 @@ paths:
     get:
       summary: Get Campaigns Mapping
       description: Lists campaign_id to campaign_name mappings as well as brand_id to brand_name and creative_id to creative_name mappings for client accessing the route
+      tags:
+        - Mappings
       security:
         - keycloakClient: []
       responses:
@@ -205,6 +218,8 @@ paths:
     get:
       summary: Get Downloads
       description: Lists available report files for the current client, determined from the bearer token. The client can either list all their report files or, by passing in an eventHour, see only files for that particular time. Files which have expired will not be returned.
+      tags:
+        - Downloads
       security:
         - keycloakClient: []
       parameters:
@@ -253,6 +268,8 @@ paths:
     get:
       summary: Get Exchange Rates
       description: Retrieve historical foreign currency exchange rates by date and currency type. This route either accepts parameters for date and currency, and returns the exchange rate for that currency on the given date --or-- accepts no parameters and returns all exchange rates for the past 15 days.
+      tags:
+        - Exchange rates
       security:
         - keycloakClient: []
       parameters:
@@ -300,6 +317,8 @@ paths:
     get:
       summary: Get Files
       description: This route downloads a particular report file by its ID. The API will transparently grab the file from wherever it is stored and return it to the caller. The particular report file requested must be associated with the client accessing the route, or the download will not be allowed. Links to this route are what is returned in the downloadURL field of the response to the /downloads route.
+      tags:
+        - Files
       operationId: downloadFile
       security:
         - keycloakClient: []
@@ -612,4 +631,3 @@ components:
           description: Descriptive message explaining the error.
           example: An error has occurred, please check your input and try again.
           # Actual message will vary based on the error
-
